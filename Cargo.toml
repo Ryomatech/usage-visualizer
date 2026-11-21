@@ -1,0 +1,8 @@
+[package]
+name = "usage-visualizer"
+version = "0.1.0"
+edition = "2021"
+description = "Lightweight, ToS-compliant CLI usage limit visualizer for Claude Code, Codex, and Antigravity"
+license = "MIT"
+
+[dependencies]
