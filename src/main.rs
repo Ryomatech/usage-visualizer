@@ -182,15 +182,15 @@ fn fallback_to_previous_if_error(
         if let Some(old) = prev_state
             .providers
             .iter()
-            .find(|p| p.provider == current.provider && !p.windows.is_empty())
+            .find(|p| {
+                p.provider == current.provider
+                    && p.windows
+                        .iter()
+                        .any(|w| w.resets_at_epoch.map(|r| r > now).unwrap_or(false))
+            })
         {
             let mut cached = old.clone();
             cached.status = "cached".to_string();
-            cached.windows = cached
-                .windows
-                .into_iter()
-                .map(|w| w.normalized_for_now(now))
-                .collect();
             return cached;
         }
     }

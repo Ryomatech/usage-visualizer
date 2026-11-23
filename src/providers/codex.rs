@@ -107,6 +107,7 @@ pub fn fetch_codex_usage() -> ProviderUsage {
                     let trimmed = line.trim();
                     if let Ok(val) = JsonValue::parse(trimmed) {
                         if val.get("id").and_then(|v| v.as_i64()) == Some(2) {
+                            drop(stdin);
                             let _ = tx.send(Ok(trimmed.to_string()));
                             return;
                         }
