@@ -145,10 +145,15 @@ fn render_provider(
         }
 
         let bar = build_progress_bar(rem, 20);
-        let rem_str = if rem < opts.warn_threshold_percent {
-            format!("{:>5.0}% (!)", rem)
+        let pct_num = if (rem - rem.round()).abs() < 0.05 {
+            format!("{:>5.0}%", rem)
         } else {
-            format!("{:>5.0}%    ", rem)
+            format!("{:>5.1}%", rem)
+        };
+        let rem_str = if rem < opts.warn_threshold_percent {
+            format!("{} (!)", pct_num)
+        } else {
+            format!("{}    ", pct_num)
         };
         let reset_str =
             format_reset_countdown(win.resets_at_epoch, now_epoch, opts.tz_offset_secs);

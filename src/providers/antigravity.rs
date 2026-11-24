@@ -115,10 +115,18 @@ pub fn parse_antigravity_response(raw_output: &str, now: i64) -> ProviderUsage {
                 _ => ("Quota", 2),
             };
             let label = format!("{} ({})", short_group, win_suffix);
-            let reset_epoch = bucket
-                .get("reset_time")
-                .and_then(|v| v.as_str())
-                .and_then(parse_iso8601_utc);
+            let has_active_usage = bucket.get("description").and_then(|v| v.as_str()).is_some()
+                || rem_frac < 0.9999;
+            let reset_epoch = if has_active_usage {
+                bucket
+                    .get("reset_time")
+                    .and_then(|v| v.as_str())
+                    .and_then(parse_iso8601_utc)
+            } else {
+                // When remaining_fraction == 1 and description is absent, the rolling window
+                // has not started yet (agy returns now + window_duration on every poll).
+                None
+            };
 
             let w = QuotaWindow::from_remaining(label, rem_frac * 100.0, reset_epoch);
             group_windows.push((sort_order, w));
